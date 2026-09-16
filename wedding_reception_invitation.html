@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Wedding Reception | Elampavai & Ranjith</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome & Canvas Confetti -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        goldBase: '#D4AF37',
+                        goldDark: '#996515',
+                        goldLight: '#F9E79F',
+                        goldMetallic: '#C5A059',
+                        burgundy: '#6B1D2F',
+                        royalPlum: '#3B1219',
+                        ivoryBg: '#FFFDF9',
+                        creamPaper: '#FAF4E8'
+                    },
+                    fontFamily: {
+                        script: ['"Great Vibes"', 'cursive'],
+                        cinzel: ['"Cinzel"', 'serif'],
+                        serif: ['"Cormorant Garamond"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #110A0C;
+            color: #4A3A2C;
+            overflow-x: hidden;
+        }
+
+        /* Gold Gradient Text */
+        .gold-text {
+            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gold-border {
+            border-image: linear-gradient(to bottom right, #BF953F, #FCF6BA, #B38728, #AA771C) 1;
+        }
+
+        .royal-card-shadow {
+            box-shadow: 0 25px 50px -12px rgba(107, 29, 47, 0.4), 0 0 40px rgba(212, 175, 55, 0.25);
+        }
+
+        /* Shimmer background */
+        .shimmer-bg {
+            background: radial-gradient(circle at 50% 30%, #2A1016 0%, #17080B 60%, #0D0406 100%);
+        }
+
+        /* Glowing Lantern Animation */
+        .lantern-glow {
+            animation: lanternPulse 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes lanternPulse {
+            0% { filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.5)); transform: translateY(0px) rotate(-1deg); }
+            100% { filter: drop-shadow(0 0 16px rgba(255, 215, 0, 0.9)); transform: translateY(-4px) rotate(1deg); }
+        }
+
+        /* Gold Sparkle floating */
+        #sparkleCanvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .pop-blessing {
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+        }
+        .pop-blessing:hover {
+            transform: scale(1.2) rotate(8deg);
+            filter: drop-shadow(0 0 10px rgba(255,215,0,0.8));
+        }
+
+        /* Decorative filigree SVG background overlay */
+        .bg-filigree-pattern {
+            background-image: radial-gradient(#d4af37 0.5px, transparent 0.5px), radial-gradient(#d4af37 0.5px, #faf4e8 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            opacity: 0.05;
+        }
+
+        /* Scrollbar styles */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #17080B; }
+        ::-webkit-scrollbar-thumb { background: #C5A059; border-radius: 3px; }
+    </style>
+</head>
+<body class="shimmer-bg min-h-screen relative flex flex-col justify-between selection:bg-goldMetallic selection:text-white">
+
+    <!-- Canvas for floating sparkles -->
+    <canvas id="sparkleCanvas"></canvas>
+
+    <!-- TOP UTILITY BAR (Music & Quick Share) -->
+    <div class="fixed top-4 right-4 z-50 flex items-center gap-2">
+        <button id="musicToggle" onclick="toggleMusic()" class="bg-royalPlum/90 hover:bg-burgundy text-goldLight p-3 rounded-full shadow-xl border border-goldMetallic/50 transition-all transform hover:scale-105 flex items-center gap-2 text-xs font-cinzel font-semibold px-4 backdrop-blur-md">
+            <i id="musicIcon" class="fa-solid fa-music"></i>
+            <span id="musicText">Play Music</span>
+        </button>
+        <button onclick="shareInvitation()" class="bg-royalPlum/90 hover:bg-burgundy text-goldLight p-3 rounded-full shadow-xl border border-goldMetallic/50 transition-all transform hover:scale-105 flex items-center justify-center w-10 h-10 backdrop-blur-md" title="Share Invitation">
+            <i class="fa-solid fa-share-nodes"></i>
+        </button>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="container mx-auto px-3 py-6 sm:py-10 max-w-4xl relative z-20 flex-grow flex items-center justify-center">
+
+        <!-- ==================== STAGE 1: UNLOCK THE CELEBRATION GAME ==================== -->
+        <div id="gameScreen" class="w-full max-w-lg text-center transition-all duration-700">
+            <div class="bg-creamPaper rounded-3xl p-6 sm:p-10 royal-card-shadow relative overflow-hidden border-4 border-goldMetallic/60">
+                <!-- Outer Gold Corner Accents -->
+                <div class="absolute top-2 left-2 text-goldMetallic text-xl"><i class="fa-solid fa-crown"></i></div>
+                <div class="absolute top-2 right-2 text-goldMetallic text-xl"><i class="fa-solid fa-crown"></i></div>
+                
+                <div class="mb-4 inline-block">
+                    <span class="bg-burgundy/10 text-burgundy text-xs font-cinzel font-bold tracking-widest px-4 py-1.5 rounded-full border border-burgundy/30 uppercase">
+                        ✨ Royal Gateway ✨
+                    </span>
+                </div>
+
+                <h1 class="font-cinzel text-2xl sm:text-3xl font-extrabold text-royalPlum mb-2">
+                    Unlock The Invitation
+                </h1>
+                <p class="font-serif italic text-gray-700 text-sm sm:text-base mb-4">
+                    Catch <span id="targetCount" class="font-bold text-burgundy">5</span> Golden Blessings to enter the grand celebration of <br>
+                    <span class="font-script text-2xl text-burgundy font-bold">Elampavai & Ranjith</span>
+                </p>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-goldLight/50 rounded-full h-3.5 mb-6 p-0.5 border border-goldMetallic/50 shadow-inner">
+                    <div id="progressBar" class="bg-gradient-to-r from-goldMetallic via-amber-400 to-burgundy h-full rounded-full transition-all duration-300 w-0"></div>
+                </div>
+
+                <!-- Interactive Catch Box -->
+                <div id="blessingContainer" class="relative h-60 sm:h-64 w-full bg-ivoryBg/80 rounded-2xl border-2 border-dashed border-goldMetallic/40 overflow-hidden flex items-center justify-center shadow-inner">
+                    <p id="gameHint" class="text-xs font-cinzel text-goldDark uppercase tracking-widest animate-pulse">
+                        Tap floating blessings! 💫
+                    </p>
+                </div>
+
+                <!-- Skip Button -->
+                <div class="mt-6 flex justify-between items-center text-xs text-gray-500">
+                    <span>Press blessings to unlock</span>
+                    <button onclick="unlockInvitation()" class="text-burgundy font-cinzel font-bold underline hover:text-goldDark transition-colors">
+                        Skip to Invitation &rarr;
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== STAGE 2: MAIN ORNATE INVITATION CARD ==================== -->
+        <div id="invitationScreen" class="w-full hidden opacity-0 transition-opacity duration-1000 transform translate-y-8">
+            <div class="bg-creamPaper rounded-3xl p-4 sm:p-8 md:p-12 royal-card-shadow relative overflow-hidden border-[6px] border-goldMetallic/80">
+                
+                <!-- Background Filigree Subtle Texture -->
+                <div class="absolute inset-0 bg-filigree-pattern pointer-events-none"></div>
+
+                <!-- GOLD EMBOSSED ORNATE BORDER OVERLAY -->
+                <div class="absolute inset-2 sm:inset-4 border-2 border-goldMetallic/50 rounded-2xl pointer-events-none flex flex-col justify-between p-2">
+                    <div class="flex justify-between">
+                        <svg class="w-10 h-10 text-goldMetallic" viewBox="0 0 100 100" fill="currentColor"><path d="M0,0 L40,0 C20,20 20,20 0,40 Z"/></svg>
+                        <svg class="w-10 h-10 text-goldMetallic rotate-90" viewBox="0 0 100 100" fill="currentColor"><path d="M0,0 L40,0 C20,20 20,20 0,40 Z"/></svg>
+                    </div>
+                    <div class="flex justify-between">
+                        <svg class="w-10 h-10 text-goldMetallic -rotate-90" viewBox="0 0 100 100" fill="currentColor"><path d="M0,0 L40,0 C20,20 20,20 0,40 Z"/></svg>
+                        <svg class="w-10 h-10 text-goldMetallic rotate-180" viewBox="0 0 100 100" fill="currentColor"><path d="M0,0 L40,0 C20,20 20,20 0,40 Z"/></svg>
+                    </div>
+                </div>
+
+                <!-- HANGING LANTERNS (As seen in reference image) -->
+                <div class="absolute top-0 left-4 sm:left-10 flex gap-2 z-10 pointer-events-none">
+                    <div class="lantern-glow text-center">
+                        <div class="w-0.5 h-12 bg-goldMetallic mx-auto"></div>
+                        <i class="fa-solid fa-kaaba text-goldMetallic text-xl sm:text-2xl filter drop-shadow"></i>
+                    </div>
+                    <div class="lantern-glow text-center hidden sm:block" style="animation-delay: 1s;">
+                        <div class="w-0.5 h-16 bg-goldMetallic mx-auto"></div>
+                        <i class="fa-solid fa-kaaba text-goldDark text-lg filter drop-shadow"></i>
+                    </div>
+                </div>
+                <div class="absolute top-0 right-4 sm:right-10 flex gap-2 z-10 pointer-events-none">
+                    <div class="lantern-glow text-center hidden sm:block" style="animation-delay: 1.5s;">
+                        <div class="w-0.5 h-16 bg-goldDark mx-auto"></div>
+                        <i class="fa-solid fa-kaaba text-goldDark text-lg filter drop-shadow"></i>
+                    </div>
+                    <div class="lantern-glow text-center" style="animation-delay: 0.5s;">
+                        <div class="w-0.5 h-12 bg-goldMetallic mx-auto"></div>
+                        <i class="fa-solid fa-kaaba text-goldMetallic text-xl sm:text-2xl filter drop-shadow"></i>
+                    </div>
+                </div>
+
+                <!-- HEADER EMBLEM & TITLE -->
+                <div class="text-center pt-6 sm:pt-4 mb-6 relative z-10">
+                    <!-- Top Flourish -->
+                    <div class="flex items-center justify-center gap-3 text-goldMetallic mb-2">
+                        <span class="h-[2px] w-12 sm:w-24 bg-gradient-to-r from-transparent to-goldMetallic"></span>
+                        <i class="fa-solid fa-asterisk text-sm animate-spin" style="animation-duration: 8s;"></i>
+                        <span class="font-cinzel text-xs font-bold tracking-[0.3em] uppercase text-goldDark">Save The Date</span>
+                        <i class="fa-solid fa-asterisk text-sm animate-spin" style="animation-duration: 8s;"></i>
+                        <span class="h-[2px] w-12 sm:w-24 bg-gradient-to-l from-transparent to-goldMetallic"></span>
+                    </div>
+
+                    <p class="font-serif italic text-sm sm:text-base text-gray-700">With immense joy and gratitude we cordially invite you to the</p>
+                    
+                    <h1 class="font-script text-4xl sm:text-6xl md:text-7xl font-bold text-burgundy my-2 filter drop-shadow-sm">
+                        Wedding Reception
+                    </h1>
+
+                    <div class="inline-block border-y-2 border-goldMetallic/60 py-1 px-8 my-2 bg-ivoryBg/80 shadow-sm">
+                        <span class="font-cinzel tracking-widest uppercase font-extrabold text-sm sm:text-base text-goldDark">
+                            Bride & Groom
+                        </span>
+                    </div>
+                </div>
+
+                <!-- BRIDE & GROOM SECTION (SIDE-BY-SIDE DESIGN) -->
+                <div class="relative z-10 my-6 py-6 px-4 sm:px-6 bg-ivoryBg/90 rounded-2xl border-2 border-goldMetallic/40 shadow-md">
+                    <div class="grid grid-cols-1 md:grid-cols-11 gap-4 items-center">
+                        
+                        <!-- BRIDE DETAILS -->
+                        <div class="md:col-span-5 text-center md:text-right space-y-1.5">
+                            <h2 class="font-script text-3xl sm:text-4xl md:text-5xl font-bold text-burgundy">
+                                Ms. Elampavai K
+                            </h2>
+                            <p class="font-cinzel text-xs sm:text-sm font-semibold text-goldDark">
+                                B.Sc., (Nursing)
+                            </p>
+                            <p class="text-xs text-gray-600 italic">
+                                (G.K.N.M. Hospital, Coimbatore)
+                            </p>
+                            <div class="pt-2 border-t border-goldMetallic/20 mt-2 text-xs text-gray-700 font-serif">
+                                <span class="font-bold text-royalPlum uppercase text-[10px] tracking-wider">Daughter of</span><br>
+                                <span class="text-sm font-semibold">Mr. M. Kannan</span><br>
+                                <span class="text-sm font-semibold">& Mrs. K. Kannagi</span>
+                            </div>
+                        </div>
+
+                        <!-- WEDS DIVIDER -->
+                        <div class="md:col-span-1 text-center py-3 md:py-0">
+                            <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-tr from-goldLight via-goldMetallic to-goldDark text-royalPlum font-script text-3xl font-bold shadow-md border-2 border-white">
+                                weds
+                            </div>
+                        </div>
+
+                        <!-- GROOM DETAILS -->
+                        <div class="md:col-span-5 text-center md:text-left space-y-1.5">
+                            <h2 class="font-script text-3xl sm:text-4xl md:text-5xl font-bold text-burgundy">
+                                Mr. Ranjith T
+                            </h2>
+                            <p class="font-cinzel text-xs sm:text-sm font-semibold text-goldDark">
+                                B.E., (Mech)
+                            </p>
+                            <p class="text-xs text-gray-600 italic">
+                                (Vantage Marine Pte Ltd., Singapore)
+                            </p>
+                            <div class="pt-2 border-t border-goldMetallic/20 mt-2 text-xs text-gray-700 font-serif">
+                                <span class="font-bold text-royalPlum uppercase text-[10px] tracking-wider">Son of</span><br>
+                                <span class="text-sm font-semibold">Mr. E. Tamilarasan</span><br>
+                                <span class="text-sm font-semibold">& Mrs. T. Jeeva</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- ROMANTIC QUOTE BANNER -->
+                <div class="relative z-10 text-center my-6 py-4 px-6 bg-gradient-to-r from-goldLight/30 via-burgundy/10 to-goldLight/30 rounded-xl border border-goldMetallic/40">
+                    <p class="font-serif italic text-base sm:text-lg text-burgundy font-medium leading-relaxed">
+                        "Two souls, one heart — united in love, blessed by family, and celebrated with all who hold them dear."
+                    </p>
+                </div>
+
+                <!-- EVENT DETAILS (DATE, TIME, VENUE) -->
+                <div class="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-4 my-8 text-center">
+                    
+                    <!-- DATE CARD -->
+                    <div class="p-4 bg-ivoryBg/90 rounded-2xl border-2 border-goldMetallic/30 shadow-md transform transition hover:-translate-y-1 flex flex-col justify-center items-center">
+                        <div class="w-12 h-12 rounded-full bg-goldLight/60 border border-goldMetallic text-burgundy flex items-center justify-center text-xl mb-2 shadow-inner">
+                            <i class="fa-regular fa-calendar-days"></i>
+                        </div>
+                        <span class="font-cinzel text-[10px] font-bold uppercase tracking-widest text-goldDark">Reception Date</span>
+                        <p class="font-serif font-bold text-royalPlum text-lg sm:text-xl mt-1">
+                            Wednesday
+                        </p>
+                        <p class="text-xs font-bold text-burgundy font-cinzel">11 / 11 / 2026</p>
+                    </div>
+
+                    <!-- TIME CARD -->
+                    <div class="p-4 bg-ivoryBg/90 rounded-2xl border-2 border-goldMetallic/30 shadow-md transform transition hover:-translate-y-1 flex flex-col justify-center items-center">
+                        <div class="w-12 h-12 rounded-full bg-goldLight/60 border border-goldMetallic text-burgundy flex items-center justify-center text-xl mb-2 shadow-inner">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <span class="font-cinzel text-[10px] font-bold uppercase tracking-widest text-goldDark">Time</span>
+                        <p class="font-serif font-bold text-royalPlum text-lg sm:text-xl mt-1">
+                            12.00 PM
+                        </p>
+                        <p class="text-xs font-bold text-burgundy font-cinzel">Afternoon Feast</p>
+                    </div>
+
+                    <!-- VENUE CARD -->
+                    <div class="p-4 bg-ivoryBg/90 rounded-2xl border-2 border-goldMetallic/30 shadow-md transform transition hover:-translate-y-1 flex flex-col justify-center items-center">
+                        <div class="w-12 h-12 rounded-full bg-goldLight/60 border border-goldMetallic text-burgundy flex items-center justify-center text-xl mb-2 shadow-inner">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <span class="font-cinzel text-[10px] font-bold uppercase tracking-widest text-goldDark">Venue</span>
+                        <p class="font-serif font-bold text-royalPlum text-base sm:text-lg mt-1 leading-snug">
+                            Alagananda Wedding Hall
+                        </p>
+                        <p class="text-xs font-bold text-burgundy font-cinzel">Cuddalore</p>
+                    </div>
+
+                </div>
+
+                <!-- ACTION BUTTONS (CALENDAR & MAPS) -->
+                <div class="relative z-10 flex flex-wrap justify-center gap-3 my-6">
+                    <button onclick="addToCalendar()" class="px-6 py-3 rounded-full bg-gradient-to-r from-burgundy via-royalPlum to-burgundy text-goldLight text-xs sm:text-sm font-cinzel font-bold shadow-lg hover:shadow-2xl hover:scale-105 transition-all flex items-center gap-2 border border-goldMetallic/60">
+                        <i class="fa-regular fa-calendar-plus text-base"></i> Add to Calendar
+                    </button>
+                    <a href="https://www.google.com/maps/search/?api=1&query=Alagananda+Wedding+Hall+Cuddalore" target="_blank" class="px-6 py-3 rounded-full bg-ivoryBg text-royalPlum border-2 border-goldMetallic text-xs sm:text-sm font-cinzel font-bold shadow-md hover:bg-goldLight/30 hover:scale-105 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-map-location-dot text-base text-burgundy"></i> Get Venue Directions
+                    </a>
+                </div>
+
+                <!-- CLOSING NOTE & HOST SIGNATURE -->
+                <div class="relative z-10 text-center pt-6 border-t border-goldMetallic/30 mt-8">
+                    <p class="font-serif italic text-sm sm:text-base text-gray-700 max-w-xl mx-auto mb-6">
+                        Your presence will make our celebration truly complete. We look forward to sharing this joyous moment with you.
+                    </p>
+                    
+                    <div class="inline-block bg-ivoryBg/90 px-8 py-3 rounded-2xl border-2 border-goldMetallic/40 shadow-sm">
+                        <p class="font-script text-2xl text-burgundy font-bold">With love,</p>
+                        <p class="font-cinzel text-base font-extrabold text-royalPlum">
+                            Ms. Durka Kannan, <span class="text-xs text-goldDark">B.E (CSE)</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- RSVP / WISHES BUTTON TRIGGER & FORM -->
+                <div class="relative z-10 mt-10 text-center">
+                    <button onclick="openRsvpModal()" class="px-8 py-3.5 rounded-full bg-gradient-to-r from-goldMetallic via-amber-400 to-goldDark text-royalPlum font-cinzel font-extrabold text-sm shadow-xl hover:scale-105 transition-all flex items-center justify-center gap-2 mx-auto border-2 border-white">
+                        <i class="fa-solid fa-heart-circle-check text-lg"></i> Send Wishes & RSVP
+                    </button>
+                </div>
+
+                <!-- SUBMITTED WISHES FEED -->
+                <div id="wishesSection" class="relative z-10 mt-8 pt-6 border-t border-goldMetallic/20 hidden">
+                    <h3 class="font-cinzel text-xs font-bold text-goldDark uppercase tracking-widest text-center mb-4">
+                        💌 Heartfelt Wishes from Guests 💌
+                    </h3>
+                    <div id="wishesFeed" class="space-y-3 max-h-48 overflow-y-auto px-2"></div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- RSVP MODAL -->
+    <div id="rsvpModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-creamPaper rounded-3xl p-6 sm:p-8 max-w-md w-full border-4 border-goldMetallic relative shadow-2xl animate-fade-in">
+            <button onclick="closeRsvpModal()" class="absolute top-4 right-4 text-gray-500 hover:text-burgundy text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-cinzel text-xl font-bold text-royalPlum mb-1 text-center">Send Blessings & RSVP</h3>
+            <p class="font-serif italic text-xs text-gray-600 text-center mb-4">Leave your warm greetings for Elampavai & Ranjith</p>
+
+            <form onsubmit="handleRsvpSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block font-cinzel text-xs font-bold text-royalPlum mb-1">Your Name</label>
+                    <input type="text" id="guestName" required placeholder="Enter your full name" class="w-full px-4 py-2.5 rounded-xl border border-goldMetallic/50 bg-white focus:outline-none focus:ring-2 focus:ring-goldMetallic text-sm">
+                </div>
+                <div>
+                    <label class="block font-cinzel text-xs font-bold text-royalPlum mb-1">Attendance Status</label>
+                    <select id="guestStatus" class="w-full px-4 py-2.5 rounded-xl border border-goldMetallic/50 bg-white focus:outline-none focus:ring-2 focus:ring-goldMetallic text-sm">
+                        <option value="Joyfully Attending">Joyfully Attending</option>
+                        <option value="Sending Warm Blessings">Sending Warm Blessings Remotely</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-cinzel text-xs font-bold text-royalPlum mb-1">Your Message</label>
+                    <textarea id="guestMsg" rows="3" required placeholder="Write your heartfelt wish for the couple..." class="w-full px-4 py-2.5 rounded-xl border border-goldMetallic/50 bg-white focus:outline-none focus:ring-2 focus:ring-goldMetallic text-sm"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3 bg-gradient-to-r from-burgundy to-royalPlum text-goldLight font-cinzel font-bold rounded-xl text-sm shadow-lg hover:brightness-110 transition-all">
+                    Submit Blessings ✨
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-4 text-xs font-cinzel text-goldMetallic/70 relative z-20">
+        Elampavai & Ranjith • 11.11.2026 • Royal Wedding Reception
+    </footer>
+
+    <script>
+        // --- GAME LOGIC ---
+        let popped = 0;
+        const targetCount = 5;
+        const blessingIcons = ['💍', '💖', '👑', '✨', '💐', '🕊️'];
+
+        function initGame() {
+            const container = document.getElementById('blessingContainer');
+            document.getElementById('targetCount').innerText = targetCount;
+            for (let i = 0; i < 5; i++) {
+                spawnBlessing();
+            }
+        }
+
+        function spawnBlessing() {
+            const container = document.getElementById('blessingContainer');
+            if (!container) return;
+
+            const elem = document.createElement('div');
+            const icon = blessingIcons[Math.floor(Math.random() * blessingIcons.length)];
+            
+            elem.className = 'pop-blessing absolute text-3xl select-none p-2';
+            elem.innerHTML = icon;
+            
+            const maxX = Math.max(20, container.clientWidth - 50);
+            const maxY = Math.max(20, container.clientHeight - 50);
+            
+            elem.style.left = `${Math.random() * maxX}px`;
+            elem.style.top = `${Math.random() * maxY}px`;
+            
+            elem.onclick = (e) => popBlessing(e, elem);
+            container.appendChild(elem);
+        }
+
+        function popBlessing(e, element) {
+            playPopSynth();
+            element.remove();
+            popped++;
+
+            const percent = Math.min((popped / targetCount) * 100, 100);
+            document.getElementById('progressBar').style.width = `${percent}%`;
+
+            // Burst sparkles
+            confetti({
+                particleCount: 20,
+                spread: 50,
+                origin: { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight },
+                colors: ['#D4AF37', '#FFFDF9', '#6B1D2F']
+            });
+
+            if (popped >= targetCount) {
+                unlockInvitation();
+            } else {
+                spawnBlessing();
+            }
+        }
+
+        function unlockInvitation() {
+            playChimeSynth();
+            
+            // Grand Confetti
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.5 },
+                colors: ['#D4AF37', '#FCF6BA', '#6B1D2F', '#AA771C']
+            });
+
+            const gameScreen = document.getElementById('gameScreen');
+            const invScreen = document.getElementById('invitationScreen');
+
+            gameScreen.classList.add('opacity-0', 'scale-95');
+            
+            setTimeout(() => {
+                gameScreen.classList.add('hidden');
+                invScreen.classList.remove('hidden');
+                setTimeout(() => {
+                    invScreen.classList.remove('opacity-0', 'translate-y-8');
+                }, 50);
+            }, 500);
+        }
+
+        // --- WEB AUDIO API SYNTHESIZER ---
+        let audioCtx;
+        let isMusicPlaying = false;
+        let musicTimer;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playPopSynth() {
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+                gain.gain.setValueAtTime(0.2, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.12);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.12);
+            } catch(e){}
+        }
+
+        function playChimeSynth() {
+            try {
+                const ctx = getAudioContext();
+                const notes = [440, 554.37, 659.25, 880, 1108.73];
+                notes.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.08);
+                    gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + i * 0.08 + 0.04);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.08 + 0.9);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime + i * 0.08);
+                    osc.stop(ctx.currentTime + i * 0.08 + 0.9);
+                });
+            } catch(e){}
+        }
+
+        function toggleMusic() {
+            const btnText = document.getElementById('musicText');
+            const btnIcon = document.getElementById('musicIcon');
+
+            if (isMusicPlaying) {
+                clearInterval(musicTimer);
+                isMusicPlaying = false;
+                btnText.innerText = 'Play Music';
+                btnIcon.classList.remove('fa-spin');
+            } else {
+                getAudioContext();
+                isMusicPlaying = true;
+                btnText.innerText = 'Pause Music';
+                btnIcon.classList.add('fa-spin');
+
+                const pentatonic = [329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
+                musicTimer = setInterval(() => {
+                    if (!isMusicPlaying) return;
+                    try {
+                        const ctx = getAudioContext();
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        const freq = pentatonic[Math.floor(Math.random() * pentatonic.length)];
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                        gain.gain.setValueAtTime(0, ctx.currentTime);
+                        gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 0.3);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 2.5);
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.start();
+                        osc.stop(ctx.currentTime + 2.5);
+                    } catch(e){}
+                }, 750);
+            }
+        }
+
+        // --- CALENDAR & SHARE APIs ---
+        function addToCalendar() {
+            const title = encodeURIComponent("Wedding Reception: Elampavai & Ranjith");
+            const details = encodeURIComponent("You are cordially invited to the Wedding Reception of Ms. Elampavai K & Mr. Ranjith T.");
+            const location = encodeURIComponent("Alagananda Wedding Hall, Cuddalore");
+            const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=20261111T063000Z/20261111T103000Z&details=${details}&location=${location}`;
+            window.open(googleUrl, '_blank');
+        }
+
+        function shareInvitation() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Wedding Reception Invitation - Elampavai & Ranjith',
+                    text: 'You are cordially invited to celebrate the Wedding Reception of Elampavai & Ranjith!',
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                document.execCommand('copy');
+                alert("Invitation link copied to clipboard!");
+            }
+        }
+
+        // --- RSVP MODAL & SUBMISSION ---
+        function openRsvpModal() {
+            document.getElementById('rsvpModal').classList.remove('hidden');
+            document.getElementById('rsvpModal').classList.add('flex');
+        }
+
+        function closeRsvpModal() {
+            document.getElementById('rsvpModal').classList.add('hidden');
+            document.getElementById('rsvpModal').classList.remove('flex');
+        }
+
+        function handleRsvpSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('guestName').value;
+            const status = document.getElementById('guestStatus').value;
+            const msg = document.getElementById('guestMsg').value;
+
+            const feed = document.getElementById('wishesFeed');
+            const section = document.getElementById('wishesSection');
+
+            const item = document.createElement('div');
+            item.className = 'bg-white p-3 rounded-xl border border-goldMetallic/40 shadow-sm text-xs text-left';
+            item.innerHTML = `
+                <div class="flex justify-between items-center font-bold text-royalPlum mb-1">
+                    <span>${escapeHtml(name)}</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-goldLight text-burgundy font-cinzel">${escapeHtml(status)}</span>
+                </div>
+                <p class="text-gray-600 italic">"${escapeHtml(msg)}"</p>
+            `;
+
+            feed.prepend(item);
+            section.classList.remove('hidden');
+            closeRsvpModal();
+
+            confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>'"]/g, t => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[t] || t));
+        }
+
+        // --- BACKGROUND GOLDEN SPARKLES ANIMATION ---
+        const canvas = document.getElementById('sparkleCanvas');
+        const ctx = canvas.getContext('2d');
+        let sparkles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Sparkle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.alpha = Math.random();
+                this.speed = Math.random() * 0.02 + 0.005;
+            }
+            update() {
+                this.alpha += this.speed;
+                if (this.alpha > 1 || this.alpha < 0) this.speed = -this.speed;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.abs(this.alpha);
+                ctx.fillStyle = '#FCF6BA';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < 65; i++) sparkles.push(new Sparkle());
+
+        function animateSparkles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            sparkles.forEach(s => { s.update(); s.draw(); });
+            requestAnimationFrame(animateSparkles);
+        }
+
+        window.onload = function() {
+            initGame();
+            animateSparkles();
+        };
+    </script>
+</body>
+</html>
